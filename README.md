@@ -22,4 +22,4 @@ This repo is deployed via Vercel and connected to the `moviemapper.com` domain.
 ## URL Structure
 
 - `moviemapper.com/challenge/[challengeId]` - Challenge landing page
-- `moviemapper.com/` - General app landing page 
+- `moviemapper.com/` - General app landing page Updated: Mon Jul 14 16:47:09 EDT 2025
