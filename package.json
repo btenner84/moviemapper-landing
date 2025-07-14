@@ -1,0 +1,11 @@
+{
+  "name": "moviemapper-landing",
+  "version": "1.0.0",
+  "description": "Challenge landing page for MovieMapper app",
+  "scripts": {
+    "build": "echo 'No build required - static HTML'"
+  },
+  "keywords": ["moviemapper", "landing-page", "challenge"],
+  "author": "Ben Tenner",
+  "license": "MIT"
+} 
