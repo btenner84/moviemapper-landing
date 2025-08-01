@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieMapper - Shared List</title>
+    <meta name="description" content="Check out this curated movie list on MovieMapper">
+    
+    <!-- Open Graph for social sharing -->
+    <meta property="og:title" content="MovieMapper - Shared List">
+    <meta property="og:description" content="Check out this curated movie list on MovieMapper">
+    <meta property="og:image" content="https://moviemapper.com/og-image.png">
+    <meta property="og:url" content="https://moviemapper.com">
+    <meta property="og:type" content="website">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f1419 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+
+        .app-title {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00, #00ff00);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient 3s ease infinite;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            margin-bottom: 20px;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .list-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #00ffff;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+            margin-bottom: 10px;
+        }
+
+        .list-info {
+            font-size: 1.2rem;
+            color: #cccccc;
+            margin-bottom: 30px;
+        }
+
+        .movie-count {
+            color: #00ff00;
+            font-weight: 600;
+        }
+
+        /* Loading state */
+        .loading {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #333;
+            border-top: 3px solid #00ffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error state */
+        .error {
+            text-align: center;
+            padding: 100px 20px;
+            color: #ff6666;
+        }
+
+        /* Movies grid */
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .movie-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            border-color: #00ffff;
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
+        }
+
+        .movie-poster {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        .movie-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .movie-year {
+            color: #aaaaaa;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .movie-rating {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(45deg, #00ff00, #00ffff);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        /* App download section */
+        .app-download {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 16px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .download-title {
+            font-size: 1.8rem;
+            color: #00ffff;
+            margin-bottom: 15px;
+        }
+
+        .download-subtitle {
+            color: #cccccc;
+            margin-bottom: 25px;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .download-btn {
+            background: linear-gradient(45deg, #00ffff, #0099cc);
+            color: #000;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .app-title {
+                font-size: 2rem;
+            }
+            
+            .list-title {
+                font-size: 1.8rem;
+            }
+            
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            
+            .movie-poster {
+                height: 220px;
+            }
+            
+            .download-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 100px 20px;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="app-title">MOVIEMAPPER</h1>
+            <div id="list-header" style="display: none;">
+                <h2 class="list-title" id="list-name">Loading...</h2>
+                <p class="list-info">
+                    <span class="movie-count" id="movie-count">0</span> movies
+                    · Created by <span id="creator-name">Unknown</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Loading state -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <h3>Loading shared list...</h3>
+            <p>Please wait while we fetch the movie list</p>
+        </div>
+
+        <!-- Error state -->
+        <div id="error" class="error" style="display: none;">
+            <h3>🎬 List Not Found</h3>
+            <p>This shared list doesn't exist or is no longer available.</p>
+        </div>
+
+        <!-- Movies grid -->
+        <div id="movies-container" style="display: none;">
+            <div class="movies-grid" id="movies-grid"></div>
+        </div>
+
+        <!-- Empty state -->
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <div class="empty-icon">🎬</div>
+            <h3>Empty List</h3>
+            <p>This list doesn't have any movies yet.</p>
+        </div>
+
+        <!-- App download section -->
+        <div class="app-download">
+            <h3 class="download-title">Get MovieMapper App</h3>
+            <p class="download-subtitle">Create your own movie lists and challenge friends!</p>
+            <div class="download-buttons">
+                <a href="https://apps.apple.com/app/moviemapper" class="download-btn">
+                    📱 Download for iOS
+                </a>
+                <a href="https://play.google.com/store/apps/details?id=com.moviemapper" class="download-btn">
+                    📱 Download for Android
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get share token from URL
+        const path = window.location.pathname;
+        const shareToken = path.split('/list/')[1];
+
+        // API configuration
+        const API_BASE_URL = 'https://patient-liberation-production-094c.up.railway.app';
+
+        // DOM elements
+        const loadingEl = document.getElementById('loading');
+        const errorEl = document.getElementById('error');
+        const listHeaderEl = document.getElementById('list-header');
+        const moviesContainerEl = document.getElementById('movies-container');
+        const emptyStateEl = document.getElementById('empty-state');
+        const moviesGridEl = document.getElementById('movies-grid');
+        const listNameEl = document.getElementById('list-name');
+        const movieCountEl = document.getElementById('movie-count');
+        const creatorNameEl = document.getElementById('creator-name');
+
+        // Load shared list data
+        async function loadSharedList() {
+            if (!shareToken) {
+                showError();
+                return;
+            }
+
+            try {
+                console.log(`🔗 Loading shared list: ${shareToken}`);
+                const response = await fetch(`${API_BASE_URL}/public/lists/${shareToken}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('📊 List data:', data);
+                
+                if (data.success) {
+                    displayList(data.data);
+                } else {
+                    throw new Error(data.error || 'Failed to load list');
+                }
+            } catch (error) {
+                console.error('❌ Error loading shared list:', error);
+                showError();
+            }
+        }
+
+        // Display list data
+        function displayList(listData) {
+            const { list, movies, creator } = listData;
+            
+            // Update meta tags for social sharing
+            document.title = `${list.name} - MovieMapper`;
+            document.querySelector('meta[property="og:title"]').content = `${list.name} - MovieMapper`;
+            document.querySelector('meta[property="og:description"]').content = `Check out "${list.name}" - a curated list of ${movies.length} movies on MovieMapper`;
+
+            // Update header
+            listNameEl.textContent = list.name;
+            movieCountEl.textContent = movies.length;
+            creatorNameEl.textContent = creator.display_name || 'MovieMapper User';
+
+            // Hide loading, show content
+            loadingEl.style.display = 'none';
+            listHeaderEl.style.display = 'block';
+
+            if (movies.length === 0) {
+                emptyStateEl.style.display = 'block';
+            } else {
+                renderMovies(movies);
+                moviesContainerEl.style.display = 'block';
+            }
+        }
+
+        // Render movies grid
+        function renderMovies(movies) {
+            moviesGridEl.innerHTML = movies.map(movie => {
+                const posterUrl = movie.movie_poster_url || 
+                    `https://image.tmdb.org/t/p/w300${movie.poster_path}` || 
+                    null;
+                
+                const year = movie.release_date ? new Date(movie.release_date).getFullYear() : '';
+                const rating = movie.user_rating ? `${movie.user_rating.toFixed(1)}%` : '';
+                
+                return `
+                    <div class="movie-card">
+                        ${rating ? `<div class="movie-rating">${rating}</div>` : ''}
+                        ${posterUrl ? 
+                            `<img class="movie-poster" src="${posterUrl}" alt="${movie.movie_title}" loading="lazy">` :
+                            `<div class="movie-poster">🎬</div>`
+                        }
+                        <h4 class="movie-title">${movie.movie_title}</h4>
+                        ${year ? `<p class="movie-year">${year}</p>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Show error state
+        function showError() {
+            loadingEl.style.display = 'none';
+            errorEl.style.display = 'block';
+        }
+
+        // Try to open in app if available
+        function tryOpenInApp() {
+            const appUrl = `moviemapper://list/${shareToken}`;
+            const storeUrl = 'https://apps.apple.com/app/moviemapper';
+            
+            // Try to open app
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = appUrl;
+            document.body.appendChild(iframe);
+            
+            // Fallback to store after delay
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+            }, 1000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSharedList();
+            
+            // Try to open in app on mobile
+            if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                tryOpenInApp();
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,17 +1,28 @@
 {
-  "buildCommand": "echo 'No build required'",
-  "outputDirectory": ".",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/challenge/(.*)",
-      "destination": "/index.html"
+      "src": "/challenge/(.*)",
+      "dest": "/index.html"
     },
     {
-      "source": "/",
-      "destination": "/index.html"
+      "src": "/list/(.*)",
+      "dest": "/shared-list-viewer.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ],
   "headers": [
+    {
+      "source": "/shared-list-viewer.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [
